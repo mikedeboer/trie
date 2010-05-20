@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>test</title>
+    <script src="../trie.js" type="text/javascript"></script>
+    <script src="../data/people_44830.js" type="text/javascript"></script>
+    <style type="text/css" media="all">
+        #divAhead{
+            position: absolute;
+            background: white;
+            border: 1px solid black;
+            z-index: 2;
+            padding: 2px;
+            top: 0px;
+            left: 0px;
+            height: 320px;
+            overflow: auto;
+            display: none;
+        }
+        #divAhead span {
+            float: left;
+            width: 100%;
+            margin-right: 8px;
+            border: 1px solid white;
+        }
+        #divAhead span.hover {
+            border-color: silver;
+        }
+    </style>
+    <script type="text/javascript">
+    // first, define a list of contacts (500+)
+    var trie, timer, oAhead, oBox,
+        lapse = 0,
+        log   = null;
+
+    function setUp() {
+        trie = new Trie();
+        var i = 0,
+            l = people.length,
+            t = new Date();
+        // add contacts to the trie
+        for (; i < l; ++i) {
+            timer = new Date();
+            trie.add(people[i]);
+            lapse += new Date() - timer;
+        }
+        t = new Date() - t;
+        addToLog("Metrics for adding " + people.length + " contacts to a trie:");
+        addToLog("Total:" + t + ", Avg: " + (lapse / l) + ", Loop overhead: " + (t - lapse));
+
+        i = lapse = 0,
+        timer = null,
+        t     = new Date();
+        var temp = [];
+        for (; i < l; i++) {
+            timer = new Date();
+            temp.push(people[i]);
+            lapse += new Date() - timer;
+        }
+        t = new Date() - t;
+        addToLog("Set against regular array add:" + t + ", Avg: " + (lapse / l) + ", Loop overhead: " + (t - lapse));
+
+        // setup the type-ahead box:
+        oAhead = document.getElementById("txtAhead");
+        oAhead.onkeyup = typeAhead;
+        oAhead.onblur = hideBox;
+        oBox = document.getElementById("divAhead");
+        oBox.style.width = (oAhead.offsetWidth + 2) + "px"
+    }
+
+    function typeAhead(e) {
+        if (!oBox || !oAhead) return;
+        e = e || event;
+
+        oBox.style.display = "block";
+        oBox.style.top  = (oAhead.offsetTop  + 32) + "px";
+        oBox.style.left = (oAhead.offsetLeft + 2)  + "px"
+
+        lapse = 0,
+        timer = new Date();
+        var t    = 0,
+            word = oAhead.value,
+            root = trie.find(word, true);
+        t += (lapse = new Date() - timer);
+        addToLog("TYPING: Finding root trie took " + lapse + "ms");
+        
+        if (!root)
+            return hideBox();
+
+        timer = new Date();
+        var list = root.getWords();
+        t += (lapse = new Date() - timer);
+        addToLog("TYPING: retrieving list of words (" + list.length + " contacts) took " + lapse + "ms");
+        var i    = 0,
+            l    = list.length,
+            html = [];
+
+        timer = new Date();
+        if (!l) {
+            oBox.innerHTML = "<span>No contacts found.</span>";
+        }
+        else {
+            word = word.substr(0, word.length - 1);
+            for (; i < l; ++i) {
+                html.push("<span onmouseover=\"this.className='hover'\" onmouseout=\"this.className=''\">",
+                    word, list[i], "</span>");
+            }
+            oBox.innerHTML = html.join("");
+        }
+        t += (lapse = new Date() - timer);
+        addToLog("TYPING: Building list of HTML took " + lapse + "ms");
+        addToLog("TYPING: Total type-ahead action took " + t + "ms");
+    }
+
+    function hideBox() {
+        if (!oBox) return;
+        oBox.style.display = "none";
+    }
+
+    function testFind() {
+        timer = new Date();
+        var list = trie.find("Marcelo Simonetti");
+        lapse = new Date() - timer;
+        addToLog("Finding one contact took " + lapse + "ms");
+        addToLog(list.toString());
+        lapse = 0;
+        timer = null;
+    }
+
+    function testSort() {
+        timer = new Date();
+        trie.sort();
+        lapse = new Date() - timer;
+        addToLog("Sorting trie took " + lapse + "ms");
+        lapse = 0;
+        timer = null;
+    }
+
+    function testResort() {
+        timer = new Date();
+        trie.sort(Trie.SORT_ASC);
+        lapse = new Date() - timer;
+        addToLog("Resorting trie took " + lapse + "ms");
+        lapse = 0;
+        timer = null;
+    }
+
+    function testLegacyFind() {
+        timer = new Date();
+        var list,
+            who = "Marcelo Simonetti",
+            i   = 0,
+            l   = people.length;
+        for (; i < l; ++i) {
+            if (people[i] == who) {
+                list = people[i];
+                break;
+            }
+        }
+        lapse = new Date() - timer;
+        addToLog("LEGACY: Finding one contact took " + lapse + "ms");
+        addToLog(list.toString());
+        lapse = 0;
+        timer = null;
+    }
+
+    function testLegacySort() {
+        timer = new Date();
+        people.sort(function(a, b) {return a < b ? -1 : a > b ? 1 : 0});
+        lapse = new Date() - timer;
+        addToLog("LEGACY: Sorting people array took " + lapse + "ms");
+        lapse = 0;
+        timer = null;
+    }
+
+    function testLegacyResort() {
+        timer = new Date();
+        people.sort(function(a, b) {return a > b ? -1 : a < b ? 1 : 0});
+        lapse = new Date() - timer;
+        addToLog("LEGACY: Resorting people array took " + lapse + "ms");
+        lapse = 0;
+        timer = null;
+    }
+
+    function addToLog(s) {
+        if (!log)
+            log = document.getElementById("log");
+        log.appendChild(document.createTextNode(s));
+        log.appendChild(document.createElement("br"));
+    }
+    </script>
+</head>
+<body>
+    <button onclick="setUp()">Load Data</button>
+    <button onclick="testFind()">Test Find</button>
+    <button onclick="testSort()">Test Sort</button>
+    <button onclick="testResort()">Test Resort</button>
+    <br />
+    <button onclick="testLegacyFind()">Test Find (Legacy)</button>
+    <button onclick="testLegacySort()">Test Sort (Legacy)</button>
+    <button onclick="testLegacyResort()">Test Resort (Legacy)</button>
+    <br />
+    <label for="txtAhead">Search for a contact:</label> <input type="text" id="txtAhead" name="txtAhead" />
+    <div id="divAhead"> </div>
+    <pre id="log"> </pre>
+</body>
+</html>
