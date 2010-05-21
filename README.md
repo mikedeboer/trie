@@ -14,7 +14,7 @@ A Trie is a kind of digital search tree. (See [Knuth1972] for more details on di
 
 [Fredkin1960] Fredkin, E. Trie Memory. Communication of the ACM. Vol. 3:9 (Sep 1960). pp. 490-499. 
 
-[source][1]
+([source][1])
 
 The trie implementation of [Dennis Byrne][2] served as a starting point and inspiration.
 
@@ -35,6 +35,9 @@ The test.html file uses a pure JS dataset of 44.830 records, which you can find 
 More information and full documentation of the API can be found in
 
       docs/index.html
+
+
+
 
 Amsterdam, 2010. Mike de Boer.
 
