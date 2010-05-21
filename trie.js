@@ -22,41 +22,44 @@
  *  THE SOFTWARE.
  */
 
+ /**
+  * Trie is a kind of digital search tree. (See [Knuth1972] for more details
+  * on digital search trees.)
+  * [Fredkin1960] introduced the trie terminology, which is abbreviated from "Retrieval".
+  * [Knuth1972] Knuth, D. E. The Art of Computer Programming Vol. 3, Sorting and Searching. Addison-Wesley. 1972.
+  * [Fredkin1960] Fredkin, E. Trie Memory. Communication of the ACM. Vol. 3:9 (Sep 1960). pp. 490-499.
+  * <a href="http://linux.thai.net/~thep/datrie/datrie.html">source</a>
+  * @see <a href="http://en.wikipedia.org/wiki/Trie">Wikipedia article</a>
+  * 
+  * The trie implementation of Dennis Byrne served as a starting point and inspiration:
+  * @link http://notdennisapf.blogspot.com/2008/12/javascript-trie-implementation.html
+  * 
+  * @param {String} stem    One character long representation of the trie node instance
+  * @default ''
+  * @param {Number} sorting Sort method. May be {@link SORT_ASC} or {@link SORT_DESC}.
+  * @default SORT_DESC
+  * @property {Number} SORT_ASC sort the trie in ascending lexical order
+  * @property {Number} SORT_DESC sort the trie in descending lexical order
+  * @property {Number} SORT_NONE  sort the trie in no particular order
+  * @author Mike de Boer <mike AT ajax.org>
+  * @constructor 
+  */
 var Trie = (function() {
-    /**
-     * Trie is a kind of digital search tree. (See [Knuth1972] for more details
-     * on digital search trees.)
-     * [Fredkin1960] introduced the trie terminology, which is abbreviated from "Retrieval".
-     * [Knuth1972] Knuth, D. E. The Art of Computer Programming Vol. 3, Sorting and Searching. Addison-Wesley. 1972.
-     * [Fredkin1960] Fredkin, E. Trie Memory. Communication of the ACM. Vol. 3:9 (Sep 1960). pp. 490-499.
-     * source: http://linux.thai.net/~thep/datrie/datrie.html
-     * @see http://en.wikipedia.org/wiki/Trie
-     * 
-     * The trie implementation of Dennis Byrne served as a starting point and inspiration:
-     * @link http://notdennisapf.blogspot.com/2008/12/javascript-trie-implementation.html
-     * 
-     * @param {String} stem    One character long representation of the trie node instance
-     * @param {Number} sorting Sort method. May be TrieNode#SORT_ASC or TrieNode#SORT_DESC.
-     * @author Mike de Boer <mike AT ajax.org>
-     * @constructor 
-     */
-    function TrieNode(stem, sorting) {
+    
+    /** @ignore */
+    function Trie(stem, sorting) {
         this.stem        = stem || "";
-        this.sorting     = sorting || TrieNode.SORT_DESC;
+        this.sorting     = sorting || Trie.SORT_DESC;
         this.wordCount   = 0;
         this.prefixCount = 0;
         this.children    = [];
     }
-    
-    /**
-     * @property {Number} apf#Trie#SORT_ASC  sort the trie in ascending lexical order
-     * @property {Number} apf#Trie#SORT_DESC sort the trie in descending lexical order
-     */
-    TrieNode.SORT_ASC  = 0x0001;
-    TrieNode.SORT_DESC = 0x0002;
-    TrieNode.SORT_NONE = 0x0004;
 
-    TrieNode.prototype = {
+    Trie.SORT_ASC  = 0x0001;
+    Trie.SORT_DESC = 0x0002;
+    Trie.SORT_NONE = 0x0004;
+
+    Trie.prototype = {
         /**
          * Add a word to the existing dictionary. If a trie node doesn't exist
          * yet, it is created with that character as its stem.
@@ -85,11 +88,11 @@ var Trie = (function() {
                 }
                 if (!t) {
                     ++this.prefixCount;
-                    t = new TrieNode(k, s);
-                    if (!s || !c.length || s & TrieNode.SORT_NONE) {
+                    t = new Trie(k, s);
+                    if (!s || !c.length || s & Trie.SORT_NONE) {
                         c.push(t);
                     }
-                    else if (s & TrieNode.SORT_DESC) {
+                    else if (s & Trie.SORT_DESC) {
                         i = l;
                         do {
                             if (--i < 0) {
@@ -126,7 +129,7 @@ var Trie = (function() {
          *
          * @param {String} sOld the old word to be replaced by the word provided
          *                      by 'sNew'
-         * @param {String} sNew the new word to added to the dictionary
+         * @param {String} sNew the new word to be added to the dictionary
          * @type  {void}
          */
         update: function(sOld, sNew) {
@@ -136,7 +139,7 @@ var Trie = (function() {
         
         /**
          * Remove a word from the dictionary. This function uses the
-         * {@link walker}, which is a generic implementation of a tree walker.
+         * walker, which is a generic implementation of a tree walker.
          *
          * @param {String} word the word to remove
          * @type  {void}
@@ -149,10 +152,10 @@ var Trie = (function() {
         
         /**
          * Find a trie node that is paired with a word or prefix 's'. Like the
-         * {@link remove} function, this function also uses the {@link walker}.
+         * {@link remove} function, this function also uses the walker.
          *
          * @param {String}   prefix the word or prefix to search for in the dictionary
-         * @type  {TrieNode}
+         * @type  {Trie}
          */
         find: function(prefix) {
             return walker(prefix, this, function(trie, idx) {
@@ -164,7 +167,7 @@ var Trie = (function() {
          * @alias {find}
          *
          * @param {String} prefix the word or prefix to search for in the dictionary
-         * @type  {TrieNode}
+         * @type  {Trie}
          */
         findPrefix: function(prefix) {
             // AFAIK, this is just an alias of find, because that returns a trie rootnode.
@@ -177,7 +180,7 @@ var Trie = (function() {
          *
          * @param {String} prefix s the word or prefix to search for in the
          *                          children of this dictionary
-         * @type  {TrieNode}
+         * @type  {Trie}
          */
         getChild: function(prefix) {
             var i = 0,
@@ -210,19 +213,19 @@ var Trie = (function() {
          * Please refer to the test suite to compare performance in your browser(s).
          *
          * @param {Number} direction sorting direction. Possible values:
-         *                 apf#Trie#SORT_ASC
-         *                 apf#Trie#SORT_DESC
+         *                 {@link Trie#SORT_ASC}
+         *                 {@link Trie#SORT_DESC}
          * @type  {void}
          */
         sort: function(direction) {
             if (typeof direction == "undefined")
-                direction = TrieNode.SORT_DESC;
+                direction = Trie.SORT_DESC;
             if (!this.prefixCount || this.sorting === direction) return;
             this.sorting = direction;
-            if (direction & TrieNode.SORT_NONE) return;
+            if (direction & Trie.SORT_NONE) return;
             var c = this.children,
                 i = c.length - 1,
-                m = direction & TrieNode.SORT_ASC ? sortAsc : sortDesc;
+                m = direction & Trie.SORT_ASC ? sortAsc : sortDesc;
             c.sort(m);
             for (; i >= 0; --i)
                 c[i].sort(direction);
@@ -234,7 +237,7 @@ var Trie = (function() {
          * type-ahead user experience pattern, but can be used to other ends as
          * well, of course.
          * The performance of this function still needs to be profiled against
-         * alternatives, like pre-caching the words Array per TrieNode when it's
+         * alternatives, like pre-caching the words Array per Trie when it's
          * instantiated.
          * 
          * @param {String} [s] prefix to prepend to a stem character to make it
@@ -282,12 +285,12 @@ var Trie = (function() {
         
         /**
          * Overrides Object.prototype.toString to deliver a more context sensitive
-         * String representation of a TrieNode.
+         * String representation of a Trie.
          *
          * @type {String}
          */
         toString: function() {
-            return "[TrieNode] '" + this.stem + "': {\n"
+            return "[Trie] '" + this.stem + "': {\n"
                  + "    stem: " + this.stem + ",\n"
                  + "    prefixCount: " + this.prefixCount + ",\n"
                  + "    wordCount: " + this.wordCount + ",\n"
@@ -298,10 +301,10 @@ var Trie = (function() {
     
     /**
      * NOT named after Johnny, but merely after the verb 'to walk'.
-     * This function walks along a TrieNode top-down until it finds the node which
+     * This function walks along a Trie top-down until it finds the node which
      * fully represents the term/ prefix/ word that was searched for.
-     * It passes the parent node of the found TrieNode and its index to a callback
-     * function. It passes the parent node, because otherwise TrieNode mutation would
+     * It passes the parent node of the found Trie and its index to a callback
+     * function. It passes the parent node, because otherwise Trie mutation would
      * become increasingly more difficult.
      *
      * An earlier implementation of this function used a naive recursive algorithm,
@@ -309,11 +312,11 @@ var Trie = (function() {
      * of tail-recursion to an inner loop.
      * 
      * @param {String}   word   the word or prefix to search for
-     * @param {TrieNode} trie   the root trie node to walk through
+     * @param {Trie}     trie   the root trie node to walk through
      * @param {Function} method callback function to which the results of the
-     *                                   walker are passed
+     *                          walker are passed
      * @type  {mixed}
-     * @private
+     * @memberOf Trie
      */
     function walker(word, trie, method) {
         if (!word || !trie || !method) return null;
@@ -342,10 +345,10 @@ var Trie = (function() {
      * The result of this helper will be that all nodes will be sorted in 
      * ascending lexical order.
      *
-     * @param {TrieNode} a first element for comparison
-     * @param {TrieNode} b second element for comparison
+     * @param {Trie} a first element for comparison
+     * @param {Trie} b second element for comparison
      * @type  {Number}
-     * @private
+     * @memberOf Trie
      */
     function sortAsc(a, b) {
         var s1 = a.stem,
@@ -358,10 +361,10 @@ var Trie = (function() {
      * The result of this helper will be that all nodes will be sorted in 
      * descending lexical order.
      *
-     * @param {TrieNode} a first element for comparison
-     * @param {TrieNode} b second element for comparison
+     * @param {Trie} a first element for comparison
+     * @param {Trie} b second element for comparison
      * @type  {Number}
-     * @private
+     * @memberOf Trie
      */
     function sortDesc(a, b) {
         var s1 = a.stem,
@@ -369,5 +372,5 @@ var Trie = (function() {
         return (s1 > s2) ? 1 : (s1 < s2) ? -1 : 0;
     }
     
-    return TrieNode;
+    return Trie;
 })();
