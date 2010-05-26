@@ -42,5 +42,5 @@ More information and full documentation of the API can be found in
 Amsterdam, 2010. Mike de Boer.
 
 [1]: http://linux.thai.net/~thep/datrie/datrie.html
-[2]: http://notdennisapf.blogspot.com/2008/12/javascript-trie-implementation.html
+[2]: http://notdennisbyrne.blogspot.com/2008/12/javascript-trie-implementation.html
 [3]: http://en.wikipedia.org/wiki/Trie

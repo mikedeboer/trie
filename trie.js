@@ -32,7 +32,7 @@
   * @see <a href="http://en.wikipedia.org/wiki/Trie">Wikipedia article</a>
   * 
   * The trie implementation of Dennis Byrne served as a starting point and inspiration:
-  * @link http://notdennisapf.blogspot.com/2008/12/javascript-trie-implementation.html
+  * @link http://notdennisbyrne.blogspot.com/2008/12/javascript-trie-implementation.html
   * 
   * @param {String} stem    One character long representation of the trie node instance
   * @default ''
@@ -63,7 +63,7 @@ var Trie = (function() {
         /**
          * Add a word to the existing dictionary. If a trie node doesn't exist
          * yet, it is created with that character as its stem.
-         * Since an add already an expensive action, compared to adding nodes to
+         * Since an add is already an expensive action, compared to adding nodes to
          * native Javascript containers like Array or Object, inserting a trie
          * node in lexical order is relatively cheap.
          * Please refer to the test suite to compare performance in your browser(s).
