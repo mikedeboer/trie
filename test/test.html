@@ -81,10 +81,10 @@
         timer = new Date();
         var t    = 0,
             word = oAhead.value,
-            root = trie.find(word, true);
+            root = trie.find(word);
         t += (lapse = new Date() - timer);
         addToLog("TYPING: Finding root trie took " + lapse + "ms");
-        
+
         if (!root)
             return hideBox();
 
@@ -189,6 +189,15 @@
         log.appendChild(document.createTextNode(s));
         log.appendChild(document.createElement("br"));
     }
+    
+    function childrenToString(c) {
+        var s = [],
+            i = 0,
+            l = c.length;
+        for (; i < l; ++i)
+            s.push(c[i].stem + " (" + c[i].stem.charCodeAt(0) + ")");
+        return "[" + s.join(", ") + "]\n";
+    }
     </script>
 </head>
 <body>
@@ -203,6 +212,6 @@
     <br />
     <label for="txtAhead">Search for a contact:</label> <input type="text" id="txtAhead" name="txtAhead" />
     <div id="divAhead"> </div>
-    <pre id="log"> </pre>
+    <pre id="log"></pre>
 </body>
 </html>
