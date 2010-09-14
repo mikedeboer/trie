@@ -49,6 +49,7 @@ var Trie = (function() {
     /** @ignore */
     function Trie(stem, sorting) {
         this.stem        = stem || "";
+        this.nstem       = this.stem.charCodeAt(0);
         this.sorting     = sorting || Trie.SORT_DESC;
         this.wordCount   = 0;
         this.prefixCount = 0;
@@ -351,8 +352,8 @@ var Trie = (function() {
      * @memberOf Trie
      */
     function sortAsc(a, b) {
-        var s1 = a.stem,
-            s2 = b.stem;
+        var s1 = a.nstem,
+            s2 = b.nstem;
         return (s1 < s2) ? 1 : (s1 > s2) ? -1 : 0;
     }
     
@@ -367,8 +368,8 @@ var Trie = (function() {
      * @memberOf Trie
      */
     function sortDesc(a, b) {
-        var s1 = a.stem,
-            s2 = b.stem;
+        var s1 = a.nstem,
+            s2 = b.nstem;
         return (s1 > s2) ? 1 : (s1 < s2) ? -1 : 0;
     }
     
