@@ -60,6 +60,8 @@ var Trie = (function() {
     Trie.SORT_DESC = 0x0002;
     Trie.SORT_NONE = 0x0004;
 
+    var STATIC_PROPS = ["stem", "nstem", "sorting", "wordCount", "prefixCount"];
+
     Trie.prototype = {
         /**
          * Add a word to the existing dictionary. If a trie node doesn't exist
@@ -296,6 +298,42 @@ var Trie = (function() {
                  + "    wordCount: " + this.wordCount + ",\n"
                  + "    children: [Array]{" + this.children.length + "}\n"
                  + "}";
+        },
+
+        /**
+         * Load this Trie instance with properties from `json`; a serialized old(er)
+         * version.
+         *
+         * @param {Object} json A serialized version of a Trie
+         * @type  {void}
+         */
+        fromJSON: function(json) {
+            STATIC_PROPS.forEach(function(prop) {
+                this[prop] = json[prop];
+            });
+            this.children = json.children.map(function(data) {
+                var child = new Trie();
+                child.fromJSON(data);
+                return child;
+            });
+        },
+
+        /**
+         * Serialize this Trie instance to a JSON blob that may be stringified
+         * and used at convenience.
+         *
+         * @type {Object}
+         */
+        toJSON: function() {
+            var json = {
+                children: this.children.map(function(child) {
+                    return child.toJSON();
+                })
+            };
+            STATIC_PROPS.forEach(function(prop) {
+                json[prop] = this[prop];
+            });
+            return json;
         }
     };
     

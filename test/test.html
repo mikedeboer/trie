@@ -183,6 +183,24 @@
         timer = null;
     }
 
+    function testSerialization() {
+        timer = new Date();
+        var json = trie.toJSON();
+        lapse = new Date() - timer;
+        addToLog("JSON: serialization took " + lapse + "ms");
+        // addToLog("JSON: " + JSON.stringify(json, null, 2));
+
+        var trie2 = new Trie();
+        timer = new Date();
+        trie2.fromJSON(json);
+        lapse = new Date() - timer;
+        addToLog("JSON: deserialization took " + lapse + "ms");
+
+        // Test if the new trie actually works.
+        var words = trie.find("James").getWords();
+        addToLog("JSON: " + words.length + " words found for 'james': " + words.join(", "));
+    }
+
     function addToLog(s) {
         if (!log)
             log = document.getElementById("log");
@@ -205,6 +223,7 @@
     <button onclick="testFind()">Test Find</button>
     <button onclick="testSort()">Test Sort</button>
     <button onclick="testResort()">Test Resort</button>
+    <button onclick="testSerialization()">Test Serialization</button>
     <br />
     <button onclick="testLegacyFind()">Test Find (Legacy)</button>
     <button onclick="testLegacySort()">Test Sort (Legacy)</button>
