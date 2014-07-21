@@ -36,31 +36,35 @@
   * 
   * @param {String} stem    One character long representation of the trie node instance
   * @default ''
+  * @param {Object} meta    Metadata associated with a word
+  * @default {}
   * @param {Number} sorting Sort method. May be {@link SORT_ASC} or {@link SORT_DESC}.
   * @default SORT_DESC
   * @property {Number} SORT_ASC sort the trie in ascending lexical order
   * @property {Number} SORT_DESC sort the trie in descending lexical order
   * @property {Number} SORT_NONE  sort the trie in no particular order
-  * @author Mike de Boer <mike AT ajax.org>
-  * @constructor 
+  * @author Mike de Boer <info AT mikedeboer DOT nl>
+  * @license MIT
+  * @constructor
   */
 var Trie = (function() {
     
     /** @ignore */
-    function Trie(stem, sorting) {
+    function Trie(stem, meta, sorting) {
         this.stem        = stem || "";
         this.nstem       = this.stem.charCodeAt(0);
         this.sorting     = sorting || Trie.SORT_DESC;
         this.wordCount   = 0;
         this.prefixCount = 0;
         this.children    = [];
+        this.meta        = meta || {};
     }
 
     Trie.SORT_ASC  = 0x0001;
     Trie.SORT_DESC = 0x0002;
     Trie.SORT_NONE = 0x0004;
 
-    var STATIC_PROPS = ["stem", "nstem", "sorting", "wordCount", "prefixCount"];
+    var STATIC_PROPS = ["stem", "nstem", "sorting", "wordCount", "prefixCount", "meta"];
 
     Trie.prototype = {
         /**
@@ -72,9 +76,10 @@ var Trie = (function() {
          * Please refer to the test suite to compare performance in your browser(s).
          *
          * @param {String} word Remainder of the word that is added to the root trie
+         * @param {Object} meta Metadata associated with a word
          * @type  {void}
          */
-        add: function(word) {
+        add: function(word, meta) {
             if (word) {
                 var t,
                     s = this.sorting,
@@ -82,6 +87,9 @@ var Trie = (function() {
                     k = word.charAt(0),
                     c = this.children,
                     l = c.length;
+                meta = meta || {};
+                if (!meta.word)
+                    meta.word = word;
                 // check if a child with stem 'k' already exists:
                 for (; i < l; ++i) {
                     if (c[i].stem == k) {
@@ -91,7 +99,7 @@ var Trie = (function() {
                 }
                 if (!t) {
                     ++this.prefixCount;
-                    t = new Trie(k, s);
+                    t = new Trie(k, meta, s);
                     if (!s || !c.length || s & Trie.SORT_NONE) {
                         c.push(t);
                     }
@@ -118,7 +126,7 @@ var Trie = (function() {
                             c.splice(i, 0, t);
                     }
                 }
-                t.add(word.substring(1));
+                t.add(word.substring(1), meta);
             }
             else {
                 ++this.wordCount;
@@ -296,6 +304,7 @@ var Trie = (function() {
                  + "    stem: " + this.stem + ",\n"
                  + "    prefixCount: " + this.prefixCount + ",\n"
                  + "    wordCount: " + this.wordCount + ",\n"
+                 + "    metadata: " + JSON.stringify(this.meta) + ",\n"
                  + "    children: [Array]{" + this.children.length + "}\n"
                  + "}";
         },
@@ -310,7 +319,7 @@ var Trie = (function() {
         fromJSON: function(json) {
             STATIC_PROPS.forEach(function(prop) {
                 this[prop] = json[prop];
-            });
+            }.bind(this));
             this.children = json.children.map(function(data) {
                 var child = new Trie();
                 child.fromJSON(data);
@@ -332,7 +341,7 @@ var Trie = (function() {
             };
             STATIC_PROPS.forEach(function(prop) {
                 json[prop] = this[prop];
-            });
+            }.bind(this));
             return json;
         }
     };
