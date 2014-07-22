@@ -142,11 +142,12 @@ var Trie = (function() {
          * @param {String} sOld the old word to be replaced by the word provided
          *                      by 'sNew'
          * @param {String} sNew the new word to be added to the dictionary
+         * @param {Object} meta Metadata associated with a word
          * @type  {void}
          */
-        update: function(sOld, sNew) {
+        update: function(sOld, sNew, meta) {
             this.remove(sOld);
-            this.add(sNew);
+            this.add(sNew, meta);
         },
         
         /**
