@@ -101,10 +101,9 @@
             oBox.innerHTML = "<span>No contacts found.</span>";
         }
         else {
-            word = word.substr(0, word.length - 1);
             for (; i < l; ++i) {
                 html.push("<span onmouseover=\"this.className='hover'\" onmouseout=\"this.className=''\">",
-                    word, list[i], "</span>");
+                          list[i], "</span>");
             }
             oBox.innerHTML = html.join("");
         }

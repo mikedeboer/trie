@@ -50,14 +50,14 @@
 var Trie = (function() {
     
     /** @ignore */
-    function Trie(stem, meta, sorting) {
+    function Trie(stem, sorting) {
         this.stem        = stem || "";
         this.nstem       = this.stem.charCodeAt(0);
         this.sorting     = sorting || Trie.SORT_DESC;
         this.wordCount   = 0;
         this.prefixCount = 0;
         this.children    = [];
-        this.meta        = meta || {};
+        this.meta        = {};
     }
 
     Trie.SORT_ASC  = 0x0001;
@@ -99,7 +99,7 @@ var Trie = (function() {
                 }
                 if (!t) {
                     ++this.prefixCount;
-                    t = new Trie(k, meta, s);
+                    t = new Trie(k, s);
                     if (!s || !c.length || s & Trie.SORT_NONE) {
                         c.push(t);
                     }
@@ -129,6 +129,7 @@ var Trie = (function() {
                 t.add(word.substring(1), meta);
             }
             else {
+                this.meta = meta;
                 ++this.wordCount;
             }
         },
@@ -250,21 +251,18 @@ var Trie = (function() {
          * The performance of this function still needs to be profiled against
          * alternatives, like pre-caching the words Array per Trie when it's
          * instantiated.
-         * 
-         * @param {String} [s] prefix to prepend to a stem character to make it
-         *                     a word
+         *
          * @type  {Array}
          */
-        getWords: function(s) {
-            s = s || this.stem;
+        getWords: function() {
             var words = [],
                 c     = this.children,
                 i     = 0,
                 l     = c.length;
             for (; i < l; ++i) {
                 if (c[i].wordCount)
-                    words.push(s + c[i].stem);
-                words = words.concat(c[i].getWords(s + c[i].stem));
+                    words.push(c[i].meta.word);
+                words = words.concat(c[i].getWords());
             }
             return words;
         },

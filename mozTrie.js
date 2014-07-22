@@ -51,14 +51,14 @@ const Trie = (function() {
   "use strict";
 
   /** @ignore */
-  function Trie(stem, meta, sorting) {
+  function Trie(stem, sorting) {
     this.stem        = stem || "";
     this.nstem       = this.stem.charCodeAt(0);
     this.sorting     = sorting || Trie.SORT_DESC;
     this.wordCount   = 0;
     this.prefixCount = 0;
     this.children    = [];
-    this.meta        = meta || {};
+    this.meta        = {};
   }
 
   Trie.SORT_ASC  = 0x0001;
@@ -82,6 +82,7 @@ const Trie = (function() {
      */
     add: function(word, meta) {
       if (!word) {
+        this.meta = meta;
         ++this.wordCount;
         return;
       }
@@ -105,7 +106,7 @@ const Trie = (function() {
       }
       if (!trie) {
         ++this.prefixCount;
-        trie = new Trie(k, meta, sorting);
+        trie = new Trie(k, sorting);
         if (!sorting || !children.length || sorting & Trie.SORT_NONE) {
           children.push(trie);
         } else if (sorting & Trie.SORT_DESC) {
@@ -258,21 +259,18 @@ const Trie = (function() {
      * The performance of this function still needs to be profiled against
      * alternatives, like pre-caching the words Array per Trie when it's
      * instantiated.
-     * 
-     * @param {String} [s] prefix to prepend to a stem character to make it
-     *                     a word
+     *
      * @type  {Array}
      */
-    getWords: function(s) {
-      s = s || this.stem;
+    getWords: function() {
       let words = [];
       let children = this.children;
       let i = 0;
       let len = children.length;
       for (; i < len; ++i) {
         if (children[i].wordCount)
-          words.push(s + children[i].stem);
-        words = words.concat(children[i].getWords(s + children[i].stem));
+          words.push(children[i].meta.word);
+        words = words.concat(children[i].getWords());
       }
       return words;
     },
