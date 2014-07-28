@@ -36,7 +36,7 @@
   * 
   * @param {String} stem    One character long representation of the trie node instance
   * @default ''
-  * @param {Object} meta    Metadata associated with a word
+  * @param {Array}  meta    Metadata associated with a word is stored here
   * @default {}
   * @param {Number} sorting Sort method. May be {@link SORT_ASC} or {@link SORT_DESC}.
   * @default SORT_DESC
@@ -57,7 +57,7 @@ var Trie = (function() {
         this.wordCount   = 0;
         this.prefixCount = 0;
         this.children    = [];
-        this.meta        = {};
+        this.meta        = [];
     }
 
     Trie.SORT_ASC  = 0x0001;
@@ -129,7 +129,7 @@ var Trie = (function() {
                 t.add(word.substring(1), meta);
             }
             else {
-                this.meta = meta;
+                this.meta.push(meta);
                 ++this.wordCount;
             }
         },
@@ -261,8 +261,11 @@ var Trie = (function() {
                 i     = 0,
                 l     = c.length;
             for (; i < l; ++i) {
-                if (c[i].wordCount)
-                    words.push(c[i].meta.word);
+                if (c[i].wordCount) {
+                    words = words.concat(c[i].meta.map(function(meta) {
+                        return meta.word;
+                    }));
+                }
                 words = words.concat(c[i].getWords());
             }
             return words;
