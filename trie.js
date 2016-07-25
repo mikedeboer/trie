@@ -159,7 +159,7 @@ var Trie = (function() {
          */
         remove: function(word) {
             walker(word, this, function(trie, idx) {
-                trie.children.remove(idx);
+                trie.children.splice(idx, 1);
             });
         },
         
