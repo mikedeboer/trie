@@ -35,6 +35,8 @@ The test.html file uses a pure JS dataset of 44.830 records, which you can find 
 More information and full documentation of the API can be found in
 
       docs/index.html
+      
+Or read them online at https://mikedeboer.github.io/trie/.
 
 License
 -------
