@@ -36,7 +36,10 @@ More information and full documentation of the API can be found in
 
       docs/index.html
 
+License
+-------
 
+MIT.
 
 
 Amsterdam, 2010. Mike de Boer.
