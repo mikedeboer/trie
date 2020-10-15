@@ -38,6 +38,11 @@ More information and full documentation of the API can be found in
       
 Or read them online at https://mikedeboer.github.io/trie/.
 
+Compiling
+-----
+
+Use `trie.js` as-is, or to compile the `trie.ts` TypeScript file into JavaScript, type into the terminal: `npx tsc trie.ts`. To compile it with *ECMAScript 6* features, add the `--target es6` flag.
+
 License
 -------
 
